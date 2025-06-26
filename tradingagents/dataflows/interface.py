@@ -701,107 +701,173 @@ def get_YFin_data(
 
     return filtered_data
 
-
 def get_stock_news_openai(ticker, curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
+    query = f"{ticker} social media news"
+    query = query.replace(" ", "+")
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+    start_date = datetime.strptime(curr_date, "%Y-%m-%d")
+    before = start_date - relativedelta(days=7)
+    before = before.strftime("%Y-%m-%d")
 
-    return response.output[1].content[0].text
+    news_results = getNewsData(query, before, curr_date)
 
+    news_str = ""
+
+    for news in news_results:
+        news_str += (
+            f"### {news['title']} (source: {news['source']}) \n\n{news['snippet']}\n\n"
+        )
+
+    if len(news_results) == 0:
+        return ""
+
+    return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
 
 def get_global_news_openai(curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
+    query = f"global macroeconomics news"
+    query = query.replace(" ", "+")
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+    start_date = datetime.strptime(curr_date, "%Y-%m-%d")
+    before = start_date - relativedelta(days=7)
+    before = before.strftime("%Y-%m-%d")
 
-    return response.output[1].content[0].text
+    news_results = getNewsData(query, before, curr_date)
 
+    news_str = ""
+
+    for news in news_results:
+        news_str += (
+            f"### {news['title']} (source: {news['source']}) \n\n{news['snippet']}\n\n"
+        )
+
+    if len(news_results) == 0:
+        return ""
+
+    return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
 
 def get_fundamentals_openai(ticker, curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
+    query = f"{ticker} fundamental discussions"
+    query = query.replace(" ", "+")
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+    start_date = datetime.strptime(curr_date, "%Y-%m-%d")
+    before = start_date - relativedelta(days=7)
+    before = before.strftime("%Y-%m-%d")
 
-    return response.output[1].content[0].text
+    news_results = getNewsData(query, before, curr_date)
+
+    news_str = ""
+
+    for news in news_results:
+        news_str += (
+            f"### {news['title']} (source: {news['source']}) \n\n{news['snippet']}\n\n"
+        )
+
+    if len(news_results) == 0:
+        return ""
+
+    return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
+
+
+# def get_stock_news_openai(ticker, curr_date):
+#     config = get_config()
+#     client = OpenAI(base_url=config["backend_url"])
+
+#     response = client.responses.create(
+#         model=config["quick_think_llm"],
+#         input=[
+#             {
+#                 "role": "system",
+#                 "content": [
+#                     {
+#                         "type": "input_text",
+#                         "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
+#                     }
+#                 ],
+#             }
+#         ],
+#         text={"format": {"type": "text"}},
+#         reasoning={},
+#         tools=[
+#             {
+#                 "type": "web_search_preview",
+#                 "user_location": {"type": "approximate"},
+#                 "search_context_size": "low",
+#             }
+#         ],
+#         temperature=1,
+#         max_output_tokens=4096,
+#         top_p=1,
+#         store=True,
+#     )
+
+#     return response.output[1].content[0].text
+
+
+# def get_global_news_openai(curr_date):
+#     config = get_config()
+#     client = OpenAI(base_url=config["backend_url"])
+
+#     response = client.responses.create(
+#         model=config["quick_think_llm"],
+#         input=[
+#             {
+#                 "role": "system",
+#                 "content": [
+#                     {
+#                         "type": "input_text",
+#                         "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
+#                     }
+#                 ],
+#             }
+#         ],
+#         text={"format": {"type": "text"}},
+#         reasoning={},
+#         tools=[
+#             {
+#                 "type": "web_search_preview",
+#                 "user_location": {"type": "approximate"},
+#                 "search_context_size": "low",
+#             }
+#         ],
+#         temperature=1,
+#         max_output_tokens=4096,
+#         top_p=1,
+#         store=True,
+#     )
+
+#     return response.output[1].content[0].text
+
+
+# def get_fundamentals_openai(ticker, curr_date):
+#     config = get_config()
+#     client = OpenAI(base_url=config["backend_url"])
+
+#     response = client.responses.create(
+#         model=config["quick_think_llm"],
+#         input=[
+#             {
+#                 "role": "system",
+#                 "content": [
+#                     {
+#                         "type": "input_text",
+#                         "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
+#                     }
+#                 ],
+#             }
+#         ],
+#         text={"format": {"type": "text"}},
+#         reasoning={},
+#         tools=[
+#             {
+#                 "type": "web_search_preview",
+#                 "user_location": {"type": "approximate"},
+#                 "search_context_size": "low",
+#             }
+#         ],
+#         temperature=1,
+#         max_output_tokens=4096,
+#         top_p=1,
+#         store=True,
+#     )
+
+#     return response.output[1].content[0].text
