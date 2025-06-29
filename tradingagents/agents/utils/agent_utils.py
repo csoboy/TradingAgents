@@ -194,8 +194,8 @@ class Toolkit:
     @tool
     def get_stockstats_indicators_report_online(
         symbol: Annotated[str, "ticker symbol of the company"],
-        indicator: Annotated[
-            str, "technical indicator to get the analysis and report of"
+        indicators: Annotated[
+            list, "technical indicators list to get the analysis and report of, eg ['close_50_sma', 'macd']"
         ],
         curr_date: Annotated[
             str, "The current trading date you are trading on, YYYY-mm-dd"
@@ -206,16 +206,17 @@ class Toolkit:
         Retrieve stock stats indicators for a given ticker symbol and indicator.
         Args:
             symbol (str): Ticker symbol of the company, e.g. AAPL, TSM
-            indicator (str): Technical indicator to get the analysis and report of
+            indicators (list): Technical indicators list to get the analysis and report of, eg ['close_50_sma', 'macd']
             curr_date (str): The current trading date you are trading on, YYYY-mm-dd
             look_back_days (int): How many days to look back, default is 30
         Returns:
             str: A formatted dataframe containing the stock stats indicators for the specified ticker symbol and indicator.
         """
 
-        result_stockstats = interface.get_stock_stats_indicators_window(
-            symbol, indicator, curr_date, look_back_days, True
-        )
+        result_stockstats = ""
+        for indicator in indicators:
+            result_stockstats += interface.get_stock_stats_indicators_window(
+                symbol, indicator, curr_date, look_back_days, True) + "\n\n"
 
         return result_stockstats
 
