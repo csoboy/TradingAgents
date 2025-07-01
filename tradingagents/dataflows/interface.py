@@ -835,7 +835,7 @@ def get_stock_news_openai(ticker, curr_date):
     return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
 
 def get_global_news_openai(curr_date):
-    query = f"{ticker} global macroeconomics news"
+    query = f"global macroeconomics news"
     query = query.replace(" ", "+")
 
     start_date = datetime.strptime(curr_date, "%Y-%m-%d")

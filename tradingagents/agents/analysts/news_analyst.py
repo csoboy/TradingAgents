@@ -43,7 +43,8 @@ def create_news_analyst(llm, toolkit):
         prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
         prompt = prompt.partial(current_date=current_date)
         prompt = prompt.partial(ticker=ticker)
-
+        prompt = prompt.partial(max_tokens=-1)
+        
         chain = prompt | llm.bind_tools(tools)
         result = chain.invoke(state["messages"])
 
